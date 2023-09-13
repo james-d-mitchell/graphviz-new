@@ -50,8 +50,6 @@ function(name)
             name := name,
             nodes := rec(),
             edges := [],
-            label := fail,
-            comments := [],
             subgraphs := rec(),
             attrs:=[],
             nodeAttrs:=[],
@@ -116,6 +114,8 @@ InstallMethod(GV_SetNodecolor, [IsGVObject, IsString],
 function(graph, color)
     graph!.nodeStyle.color := color;
 end);
+
+InstallMethod(GV_GetSubgraphs, [IsGVGraph], x -> x!.subgraphs);
 
 
 # Mutating Methods
@@ -290,7 +290,6 @@ end);
 #####################################################################
 # Get Attrs
 #####################################################################
-DeclareOperation("GV_GetAttrs", [IsGVGraph]);
 InstallMethod(GV_GetAttrs, [IsGVGraph],
 function(graph)
     return graph!.attrs;
@@ -313,17 +312,17 @@ end);
 #####################################################################
 InstallMethod(GV_AddAttr, [IsGVObject, IsString, IsString],
 function(obj, attr, value)
-    Append(GV_GetAttrs(obj), [StringFormatted("{}={}", attr, value)]);
+    Append(GV_GetAttrs(obj), [rec(key:=attr, value:=value)]);
 end);
 
 InstallMethod(GV_AddNodeAttr, [IsGVGraph, IsString, IsString],
 function(graph, attr, value)
-    Append(graph!.nodeAttrs, [StringFormatted("{}={}", attr, value)]);
+    Append(graph!.nodeAttrs, [rec(key:=attr, value:=value)]);
 end);
 
 InstallMethod(GV_AddEdgeAttr, [IsGVGraph, IsString, IsString],
 function(graph, attr, value)
-    Append(graph!.edgeAttrs, [StringFormatted("{}={}", attr, value)]);
+    Append(graph!.edgeAttrs, [rec(key:=attr, value:=value)]);
 end);
 
 #####################################################################
@@ -331,17 +330,17 @@ end);
 #####################################################################
 InstallMethod(GV_ClearAttr, [IsGVObject, IsString],
 function(obj, attr)
-    GV_AddAttr(obj, attr, "\"\"");
+    GV_AddAttr(obj, attr, "");
 end);
 
 InstallMethod(GV_ClearNodeAttr, [IsGVGraph, IsString],
 function(obj, attr)
-    GV_AddNodeAttr(obj, attr, "\"\"");
+    GV_AddNodeAttr(obj, attr, "");
 end);
 
 InstallMethod(GV_ClearEdgeAttr, [IsGVGraph, IsString],
 function(obj, attr)
-    GV_AddEdgeAttr(obj, attr, "\"\"");
+    GV_AddEdgeAttr(obj, attr, "");
 end);
 
 #####################################################################
@@ -381,13 +380,19 @@ function(graph)
     return graph!.edges;
 end);
 
+DeclareOperation("GV_AttrToString", [IsRecord]);
+InstallMethod(GV_AttrToString, [IsRecord],
+function(attr)
+    return StringFormatted("{}=\"{}\"", attr!.key, attr!.value);
+end);
+
 DeclareOperation("GV_CollapseAttrs", [IsList]); 
 InstallMethod(GV_CollapseAttrs, [IsList], 
 function(attrs)
     local output, attr;
     output := "[";
     for attr in attrs do
-        Append(output, attr);
+        Append(output, GV_AttrToString(attr));
         Append(output, ",");
     od;
     Append(output, "]");
@@ -426,13 +431,36 @@ function(node)
     return output;
 end);
 
+DeclareOperation("Quote", [IsObject]);
+InstallMethod(Quote, [IsObject],
+function(v)
+    return StringFormatted("\"{}\"", v);
+end);
+
 DeclareOperation("GV_ToDotHelp", [IsGVGraph, IsBool]);
 InstallMethod(GV_ToDotHelp, [IsGVGraph, IsBool],
 function(graph, isSubgraph)
-    local output, edge, nodeName, node, nodes;
+    local graphType, output, edge, nodeName, subName, subgraphs, attr, node, nodes;
     output := "";
     
-    Append(output, "digraph test {\n");
+    if isSubgraph then
+        graphType := "subgraph";
+    else
+        graphType := "digraph";
+    fi;
+
+    # line 1
+    Append(output, graphType);
+    Append(output, " ");
+    Append(output, Quote(GV_GetName(graph)));
+    Append(output, " {\n");
+
+    # Graph attrs
+    for attr in GV_GetAttrs(graph) do
+        Append(output, "\t");
+        Append(output, GV_AttrToString(attr));
+        Append(output, ";\n");
+    od;
 
     # global node attrs
     Append(output, "\tnode");
@@ -444,11 +472,21 @@ function(graph, isSubgraph)
     Append(output, GV_CollapseAttrs(graph!.edgeAttrs));
     Append(output, ";\n");
 
+    # subgraphs
+    subgraphs := GV_GetSubgraphs(graph);
+    Append(output, "\n");
+    for subName in RecNames(subgraphs) do
+        Append(output, GV_ToDotHelp(subgraphs.(subName), true));
+        Append(output, "\n"); 
+    od;
+
+    # edges
     for edge in GV_GetEdges(graph) do
         Append(output, "\n\t");
         Append(output, GV_EdgeToString(edge));
     od;
 
+    # nodes
     nodes := GV_GetNodes(graph);
     for nodeName in RecNames(nodes) do
         node := nodes.(nodeName);
@@ -490,9 +528,18 @@ GV_AddEdge(test, a2, a5);
 GV_AddEdge(test, a2, a3);
 GV_AddEdge(test, a3, a4);
 GV_AddAttr(a0, "color", "blue");
+GV_AddAttr(test, "label", "Invisible");
+GV_AddAttr(test, "label", "Test Graph :)");
 GV_RemoveEdge(test, "a3", "a4");
 GV_ClearAttr(a0, "color");
 GV_AddNodeAttr(test, "color", "pink");
 GV_AddEdgeAttr(test, "color", "green");
+
+sg := GV_MakeGraph("Subgraph");
+GV_AddAttr(sg, "color", "red");
+GV_AddAttr(sg, "style", "filled");
+GV_AddEdge(sg, GV_MakeNode("HELLO"), GV_MakeNode("WORLD"));
+GV_AddSubgraph(test, sg);
+
 GV_AddEdge(test, a3, a5);
 Print(GV_ToDot(test));

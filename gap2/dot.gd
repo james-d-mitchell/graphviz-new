@@ -5,19 +5,11 @@ DeclareCategory("IsGVGraph", IsGVObject);
 DeclareCategory("IsGVNode", IsGVObject);
 DeclareCategory("IsGVEdge", IsGVObject);
 
-# constructors
+# Constructors
 DeclareConstructor("GV_MakeViz", [IsGVObject]);
 DeclareOperation("GV_MakeGraph", [IsString]);
 DeclareOperation("GV_MakeNode", [IsString]);
 DeclareOperation("GV_MakeEdge", [IsGVNode, IsGVNode]);
-
-# attributes
-# DeclareAttribute("GV_Edges", IsGVObject, "mutable");
-# DeclareAttribute("GV_Name", IsGVObject, "mutable");
-# DeclareAttribute("GV_Nodes", IsGVObject, "mutable");
-# DeclareAttribute("GV_Comments", IsGVObject, "mutable");
-# DeclareAttribute("GV_Lines", IsGVObject, "mutable");
-
 
 # Getters
 DeclareOperation("GV_GetEdges", [IsGVObject]);
@@ -25,6 +17,7 @@ DeclareOperation("GV_GetEdge", [IsGVNode, IsGVNode]);
 DeclareOperation("GV_GetEdge", [IsString, IsString]);
 DeclareOperation("GV_GetName", [IsGVObject]);
 DeclareOperation("GV_GetLabel", [IsGVObject]);
+DeclareOperation("GV_GetAttrs", [IsGVGraph]);
 DeclareOperation("GV_GetNodes", [IsGVObject]);
 DeclareOperation("GV_GetNode", [IsGVObject, IsString]);
 DeclareOperation("GV_GetComments", [IsGVObject]);
@@ -40,6 +33,7 @@ DeclareOperation("GV_GetEdge", [IsGVGraph, IsString, IsString]);
 DeclareOperation("GV_GetEdge", [IsGVObject, IsGVNode, IsGVNode]);
 DeclareOperation("GV_GetNode", [IsGVObject, IsString]);
 DeclareOperation("GV_GetSubgraph", [IsGVObject, IsString]);
+DeclareOperation("GV_GetSubgraphs", [IsGVGraph]);
 
 
 # Mutating Methods
