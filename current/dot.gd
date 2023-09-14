@@ -1,3 +1,4 @@
+LoadPackage("digraphs");
 
 # declare data categories / families / types
 DeclareCategory("IsGVObject", IsObject);
@@ -17,7 +18,7 @@ DeclareOperation("GV_GetEdge", [IsGVNode, IsGVNode]);
 DeclareOperation("GV_GetEdge", [IsString, IsString]);
 DeclareOperation("GV_GetName", [IsGVObject]);
 DeclareOperation("GV_GetLabel", [IsGVObject]);
-DeclareOperation("GV_GetAttrs", [IsGVGraph]);
+DeclareOperation("GV_GetAttrs", [IsGVObject]);
 DeclareOperation("GV_GetNodes", [IsGVObject]);
 DeclareOperation("GV_GetNode", [IsGVObject, IsString]);
 DeclareOperation("GV_GetComments", [IsGVObject]);
@@ -41,7 +42,7 @@ DeclareOperation("GV_AddNode", [IsGVObject, IsString]);
 
 DeclareOperation("GV_AddEdge", [IsGVObject, IsGVEdge]);
 DeclareOperation("GV_AddEdge", [IsGVObject, IsGVNode, IsGVNode]);
-DeclareOperation("GV_AddEdge", [IsGVObject, IsString, IsString]);
+DeclareOperation("GV_AddEdge", [IsGVGraph, IsString, IsString]);
 
 DeclareOperation("GV_RemoveNode", [IsGVObject, IsGVNode]);
 DeclareOperation("GV_RemoveNode", [IsGVObject, IsString]);
@@ -59,8 +60,10 @@ DeclareOperation("GV_AddNodeAttr", [IsGVGraph, IsString, IsString]);
 DeclareOperation("GV_ClearNodeAttr", [IsGVGraph, IsString]);
 DeclareOperation("GV_AddEdgeAttr", [IsGVGraph, IsString, IsString]);
 DeclareOperation("GV_ClearEdgeAttr", [IsGVGraph, IsString]);
-DeclareOperation("GV_AddEdge", [IsGVGraph, IsString, IsString]);
 # output
-LoadPackage("digraphs");
 DeclareOperation("GV_DotDigraph", [IsDigraph]);
 DeclareOperation("GV_ToDot", [IsGVGraph]);
+DeclareOperation("GV_ToGV", [IsDigraph]);
+
+# Testing
+DeclareOperation("TestCode", []);

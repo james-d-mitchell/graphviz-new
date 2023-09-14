@@ -1,3 +1,6 @@
+LoadPackage("digraphs");
+
+
 ###############################################################################
 # Family + type
 ###############################################################################
@@ -109,11 +112,12 @@ InstallMethod(GV_GetSubgraphs, [IsGVGraph], x -> x!.subgraphs);
 
 
 # Mutating Methods
-
 ######################################################################
 # Make Edge
 ######################################################################
-InstallMethod(GV_MakeEdge, [IsGVNode, IsGVNode],
+InstallMethod(GV_MakeEdge,
+"Creates an edge object between the two provided nodes.", 
+[IsGVNode, IsGVNode],
 function(head, tail)
     return Objectify(GV_EdgeType,
         rec(
@@ -127,7 +131,9 @@ end);
 ######################################################################
 # Add Node
 ######################################################################
-InstallMethod(GV_AddNode, [IsGVGraph, IsGVNode],
+InstallMethod(GV_AddNode, 
+"Adds the node to the graph.",
+[IsGVGraph, IsGVNode],
 function(graph, node)
     local nodeName;
     nodeName := node!.name;
@@ -135,7 +141,9 @@ function(graph, node)
     return node;
 end);
 
-InstallMethod(GV_AddNode, [IsGVGraph, IsString],
+InstallMethod(GV_AddNode, 
+"Creates a new node with the given name, adds it to the graph and returns it.", 
+[IsGVGraph, IsString],
 function(graph, nodeName)
     local node;
     node := GV_MakeNode(nodeName);
@@ -167,7 +175,9 @@ end);
 ######################################################################
 # Remove Node
 ######################################################################
-InstallMethod(GV_RemoveNode, [IsGVGraph, IsString],
+InstallMethod(GV_RemoveNode, 
+"Removes a node with the given string label.",
+[IsGVGraph, IsString],
 function(graph, nodeName)
     local edges, i, head, tail, c1, c2;
 
@@ -187,7 +197,9 @@ function(graph, nodeName)
     od;    
 end);
 
-InstallMethod(GV_RemoveNode, [IsGVGraph, IsGVNode],
+InstallMethod(GV_RemoveNode, 
+"Removes the specified node from the graph.",
+[IsGVGraph, IsGVNode],
 function(graph, node)
     GV_RemoveNode(graph, node!.name);
 end);
@@ -203,7 +215,9 @@ end);
 ######################################################################
 # Add Edge
 ######################################################################
-InstallMethod(GV_AddEdge, [IsGVGraph, IsGVEdge],
+InstallMethod(GV_AddEdge, 
+"Adds the edge to the graph. Also adds the nodes the edge connects if they don't already exist.",
+[IsGVGraph, IsGVEdge],
 function(graph, edge)
     local head, tail;
     tail := edge!.tail;
@@ -222,12 +236,16 @@ function(graph, edge)
     return edge;
 end);
 
-InstallMethod(GV_AddEdge, [IsGVGraph, IsGVNode, IsGVNode],
+InstallMethod(GV_AddEdge, 
+"Adds the nodes to the graph as well as an edge between them. Returns the edge which was created.",
+[IsGVGraph, IsGVNode, IsGVNode],
 function(graph, head, tail)
     return GV_AddEdge(graph, GV_MakeEdge(head, tail));
 end);
 
-InstallMethod(GV_AddEdge, [IsGVGraph, IsString, IsString],
+InstallMethod(GV_AddEdge, 
+"Creates nodes with the specified labels and adds them to the graph as well as an edge between them. Returns the edge that was created.",
+[IsGVGraph, IsString, IsString],
 function(graph, headName, tailName)
     local head, tail;
     head := GV_MakeNode(head);
@@ -238,7 +256,9 @@ end);
 ######################################################################
 # Remove Edge
 ######################################################################
-InstallMethod(GV_RemoveEdge, [IsGVGraph, IsGVEdge],
+InstallMethod(GV_RemoveEdge, 
+"Removes the specified edge from the graph if it exists.",
+[IsGVGraph, IsGVEdge],
 function(graph, edge)
     local i, edges, temp;
     edges := graph!.edges;
@@ -250,14 +270,18 @@ function(graph, edge)
     od;
 end);
 
-InstallMethod(GV_RemoveEdge, [IsGVGraph, IsGVNode, IsGVNode],
+InstallMethod(GV_RemoveEdge, 
+"Removes the edge connecting the two nodes given from the graph if it exists.",
+[IsGVGraph, IsGVNode, IsGVNode],
 function(graph, head, tail)
     local edge;
     edge := GV_MakeEdge(head, tail);
     GV_RemoveEdge(graph, edge);
 end);
 
-InstallMethod(GV_RemoveEdge, [IsGVGraph, IsString, IsString],
+InstallMethod(GV_RemoveEdge, 
+"Removes the edge connecting the nodes with the provided labels from the graph if it exists.",
+[IsGVGraph, IsString, IsString],
 function(graph, headName, tailName)
     local head, tail;
     head := GV_MakeNode(headName);
@@ -268,7 +292,9 @@ end);
 ######################################################################
 # Add Subgraph
 ######################################################################
-InstallMethod(GV_AddSubgraph, [IsGVObject, IsGVGraph],
+InstallMethod(GV_AddSubgraph, 
+"Adds a subgraph to the specified graph.",
+[IsGVGraph, IsGVGraph],
 function(graph, subGraph)
     local subName;
     subName := subGraph!.name;
@@ -279,7 +305,9 @@ end);
 ######################################################################
 # Remove Subgraph
 ######################################################################
-InstallMethod(GV_RemoveSubgraph, [IsGVObject, IsString],
+InstallMethod(GV_RemoveSubgraph,
+"Removes the subgraph with the given label from the graph.", 
+[IsGVObject, IsString],
 function(graph, subName)
     Unbind(graph!.subgraphs.(subName));
 end);
@@ -288,19 +316,23 @@ end);
 #####################################################################
 # Get Attrs
 #####################################################################
-InstallMethod(GV_GetAttrs, [IsGVGraph],
+InstallMethod(GV_GetAttrs,
+"Gets the attributes of the specified graph",
+[IsGVGraph],
 function(graph)
     return graph!.attrs;
 end);
 
-DeclareOperation("GV_GetAttrs", [IsGVEdge]);
-InstallMethod(GV_GetAttrs, [IsGVEdge],
+InstallMethod(GV_GetAttrs, 
+"Gets the attributes of the specified edge",
+[IsGVEdge],
 function(edge)
     return edge!.attrs;
 end);
 
-DeclareOperation("GV_GetAttrs", [IsGVNode]);
-InstallMethod(GV_GetAttrs, [IsGVNode],
+InstallMethod(GV_GetAttrs, 
+"Gets the attributes of the specified node",
+[IsGVNode],
 function(node)
     return node!.attrs;
 end);
@@ -308,17 +340,23 @@ end);
 #####################################################################
 # Add Attrs
 #####################################################################
-InstallMethod(GV_AddAttr, [IsGVObject, IsString, IsString],
+InstallMethod(GV_AddAttr,
+"Adds an attribute to the specified graphviz object.",
+[IsGVObject, IsString, IsString],
 function(obj, attr, value)
     Append(GV_GetAttrs(obj), [rec(key:=attr, value:=value)]);
 end);
 
-InstallMethod(GV_AddNodeAttr, [IsGVGraph, IsString, IsString],
+InstallMethod(GV_AddNodeAttr,
+"Adds a global node attribute to the graph.",
+[IsGVGraph, IsString, IsString],
 function(graph, attr, value)
     Append(graph!.nodeAttrs, [rec(key:=attr, value:=value)]);
 end);
 
-InstallMethod(GV_AddEdgeAttr, [IsGVGraph, IsString, IsString],
+InstallMethod(GV_AddEdgeAttr,
+"Adds a gloabl edge attribute to the graph.",
+[IsGVGraph, IsString, IsString],
 function(graph, attr, value)
     Append(graph!.edgeAttrs, [rec(key:=attr, value:=value)]);
 end);
@@ -326,17 +364,23 @@ end);
 #####################################################################
 # Clear Attr
 #####################################################################
-InstallMethod(GV_ClearAttr, [IsGVObject, IsString],
+InstallMethod(GV_ClearAttr, 
+"Clears the given attribute of the given graphviz object",
+[IsGVObject, IsString],
 function(obj, attr)
     GV_AddAttr(obj, attr, "");
 end);
 
-InstallMethod(GV_ClearNodeAttr, [IsGVGraph, IsString],
+InstallMethod(GV_ClearNodeAttr,
+"Clears the specified global node attribute from the given graph.",
+[IsGVGraph, IsString],
 function(obj, attr)
     GV_AddNodeAttr(obj, attr, "");
 end);
 
-InstallMethod(GV_ClearEdgeAttr, [IsGVGraph, IsString],
+InstallMethod(GV_ClearEdgeAttr, 
+"Clears the specified global edge attribute from the given graph.",
+[IsGVGraph, IsString],
 function(obj, attr)
     GV_AddEdgeAttr(obj, attr, "");
 end);
@@ -344,7 +388,16 @@ end);
 #####################################################################
 # Get Edge
 #####################################################################
-InstallMethod(GV_GetEdge, "Hello World", [IsGVGraph, IsString, IsString],
+InstallMethod(GV_GetEdges,
+"Gets all the edges of the given graph",
+[IsGVGraph],
+function(graph)
+    return graph!.edges;
+end);
+
+InstallMethod(GV_GetEdge, 
+"Gets the edge from the graph connecting the nodes with the given labels.", 
+[IsGVGraph, IsString, IsString],
 function(graph, headName, tailName)
     local tm, hm, edge, edges;
     edges := graph!.edges;
@@ -359,7 +412,9 @@ function(graph, headName, tailName)
 end);
 
 
-InstallMethod(GV_GetEdge, [IsGVObject, IsGVNode, IsGVNode],
+InstallMethod(GV_GetEdge, 
+"Gets the edge from the graph connecting given nodes.", 
+[IsGVObject, IsGVNode, IsGVNode],
 function(graph, headNode, tailNode)
     local tailName, headName;
     tailName := GV_GetName(tailNode);
@@ -371,11 +426,6 @@ end);
 ######################################################################
 # To Dot
 ######################################################################
-
-InstallMethod(GV_GetEdges, [IsGVGraph],
-function(graph)
-    return graph!.edges;
-end);
 
 DeclareOperation("GV_AttrToString", [IsRecord]);
 InstallMethod(GV_AttrToString, [IsRecord],
@@ -570,10 +620,9 @@ function(node)
     return output;
 end);
     
-
-LoadPackage("digraphs");
-
-InstallMethod(GV_DotDigraph, [IsDigraph],
+InstallMethod(GV_ToGV, 
+"Converts a digraph to the type which can be manipulated with dot.",
+[IsDigraph],
 function(digraph)
     local i, dotgraph, out, j, l, n1, n2;
     dotgraph := GV_MakeGraph("hgn");
@@ -585,21 +634,76 @@ function(digraph)
     out := OutNeighbours(digraph);
     for i in DigraphVertices(digraph) do
         l := Length(out[i]);
-	for j in [1..l] do
-	    n1 := GV_MakeNode(String(i));
-	    n2 := GV_MakeNode(String(out[i][j]));
-	    GV_AddEdge(dotgraph, n1, n2);
-	od;
+        for j in [1..l] do
+            n1 := GV_MakeNode(String(i));
+            n2 := GV_MakeNode(String(out[i][j]));
+            GV_AddEdge(dotgraph, n1, n2);
+        od;
     od;
 
     return dotgraph;
 
 end);
 
+InstallMethod(GV_DotDigraph, 
+"Print a digraph in a dot representation", 
+[IsDigraph],
+function(x) 
+    Print(GV_ToDot(GV_ToGV(x)));
+end);
 
-x := RandomDigraph(3);
-y := GV_DotDigraph(x);
-Print(GV_ToDot(y));
-Print(":)");
-Print("WOOOOO");
+
+InstallMethod(TestCode, [], 
+function()
+    local x, y, a1, a2, a3, a4, a5, e;
+
+    # Ex1 
+    Print("Example 1: Basic Direct Conversion");
+    Print("""
+    x := RandomDigraph(3);
+    GV_DotDigraph(x);    
+    """);
+    Print("Outputs: \n");
+    x := RandomDigraph(3);
+    GV_DotDigraph(x);    
+
+    # Ex2
+    Print("\nExample 2: Convert to representation and manipulate.");
+    Print("""
+    x := RandomDigraph(4);
+    y := GV_toGV(x);
+    GV_SetName(y, "Im a graph");
+    GV_AddAttr(y, "LABELING");
+    a0 := GV_AddNode(y, "a0");
+    a1 := GV_MakeNode("a1");
+    a1 := GV_AddNode(y, a1);
+    a3 := GV_GetNode(y, "1");
+    GV_AddAttr(a3, "color", "red");
+    GV_AddAttr(a0, "shape", "diamond");
+    e := GV_AddEdge(y, a0, a3);
+    GV_AddAttr(e, "color", "blue");
+    GV_AddNodeAttr(y, "shape", "square");
+    GV_AddEdgeAttr(y, "taillabel", "Im a tail");
+    Print(GV_ToDot(y));
+    """);
+    Print("Outputs: \n");
+    x := RandomDigraph(4);
+    y := GV_ToGV(x);
+    GV_SetName(y, "Im a graph");
+    GV_AddAttr(y, "label", "LABELING");
+    a0 := GV_AddNode(y, "a0");
+    a1 := GV_MakeNode("a1");
+    a1 := GV_AddNode(y, a1);
+    a3 := GV_GetNode(y, "1");
+    GV_AddAttr(a3, "color", "red");
+    GV_AddAttr(a0, "shape", "diamond");
+    e := GV_AddEdge(y, a0, a3);
+    GV_AddAttr(e, "color", "blue");
+    GV_AddNodeAttr(y, "shape", "square");
+    GV_AddEdgeAttr(y, "taillabel", "Im a tail");
+    Print(GV_ToDot(y));
+
+
+
+end);
 

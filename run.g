@@ -1,3 +1,3 @@
 # Runs the programme
-Read("./gap2/dot.gd");
-Read("./gap2/dot.gi");
+Read("./current/dot.gd");
+Read("./current/dot.gi");

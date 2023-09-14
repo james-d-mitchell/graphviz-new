@@ -1,2 +1,2 @@
 #!/bin/bash
-~/gap-4.12.2/bin/gap.sh ./run.g
+~/Documents/GAP/gap-4.12.0/bin/gap.sh ./run.g
