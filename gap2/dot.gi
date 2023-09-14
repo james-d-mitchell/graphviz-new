@@ -69,7 +69,7 @@ function(graph, subName)
     return graph!.subgraphs.(subName);
 end);
 
-InstallMethod(GV_GetEdges, [IsGVObject],
+InstallMethod(GV_GetEdges, [IsGVGraph],
 function(graph)
     return graph!.edges;
 end);
@@ -103,16 +103,6 @@ end);
 InstallMethod(GV_SetLabel, [IsGVObject, IsString],
 function(graph, label)
     graph!.label := label;
-end);
-
-InstallMethod(GV_SetNodeStyle, [IsGVObject, IsString],
-function(graph, style)
-    graph!.nodeStyle.style := style;
-end);
-
-InstallMethod(GV_SetNodecolor, [IsGVObject, IsString],
-function(graph, color)
-    graph!.nodeStyle.color := color;
 end);
 
 InstallMethod(GV_GetSubgraphs, [IsGVGraph], x -> x!.subgraphs);
@@ -197,7 +187,7 @@ function(graph, nodeName)
     od;    
 end);
 
-InstallMethod(GV_RemoveNode, [IsGVGraphType, IsGVNode],
+InstallMethod(GV_RemoveNode, [IsGVGraph, IsGVNode],
 function(graph, node)
     GV_RemoveNode(graph, node!.name);
 end);
@@ -235,6 +225,14 @@ end);
 InstallMethod(GV_AddEdge, [IsGVGraph, IsGVNode, IsGVNode],
 function(graph, head, tail)
     return GV_AddEdge(graph, GV_MakeEdge(head, tail));
+end);
+
+InstallMethod(GV_AddEdge, [IsGVGraph, IsString, IsString],
+function(graph, headName, tailName)
+    local head, tail;
+    head := GV_MakeNode(head);
+    tail := GV_MakeNode(tail);
+    return GV_AddEdge(graph, head, tail);
 end);
 
 ######################################################################
@@ -374,7 +372,6 @@ end);
 # To Dot
 ######################################################################
 
-DeclareOperation("GV_GetEdges", [IsGVGraph]);
 InstallMethod(GV_GetEdges, [IsGVGraph],
 function(graph)
     return graph!.edges;
@@ -542,4 +539,67 @@ GV_AddEdge(sg, GV_MakeNode("HELLO"), GV_MakeNode("WORLD"));
 GV_AddSubgraph(test, sg);
 
 GV_AddEdge(test, a3, a5);
-Print(GV_ToDot(test));
+# Print(GV_ToDot(test));
+
+#################################################
+# Displaying Method
+#################################################
+
+InstallMethod(ViewString, [IsGVGraph],
+function(graph)
+    local nodes, edges, name;
+    name := GV_GetName(graph);
+    nodes := GV_GetNodes(graph);
+    edges := GV_GetEdges(graph);
+    return StringFormatted("{} is a graph with {} nodes and {} edges.", 
+    	name, 
+	Length(RecNames(nodes)), 
+	Length(edges));
+end);
+
+InstallMethod(ViewString, [IsGVNode],
+function(node)
+    local output, attr;
+    output := "Node Summary";
+    Append(output, StringFormatted("\nname: {}", GV_GetName(node)));
+    
+    Append(output, "\nattributes:");
+    for attr in GV_GetAttrs(node) do
+        Append(output, StringFormatted("\n\t{}: {}", attr!.key, attr!.value));
+    od;
+    return output;
+end);
+    
+
+LoadPackage("digraphs");
+
+InstallMethod(GV_DotDigraph, [IsDigraph],
+function(digraph)
+    local i, dotgraph, out, j, l, n1, n2;
+    dotgraph := GV_MakeGraph("hgn");
+
+    for i in DigraphVertices(digraph) do
+        GV_AddNode(dotgraph, String(i));
+    od;
+
+    out := OutNeighbours(digraph);
+    for i in DigraphVertices(digraph) do
+        l := Length(out[i]);
+	for j in [1..l] do
+	    n1 := GV_MakeNode(String(i));
+	    n2 := GV_MakeNode(String(out[i][j]));
+	    GV_AddEdge(dotgraph, n1, n2);
+	od;
+    od;
+
+    return dotgraph;
+
+end);
+
+
+x := RandomDigraph(3);
+y := GV_DotDigraph(x);
+Print(GV_ToDot(y));
+Print(":)");
+Print("WOOOOO");
+

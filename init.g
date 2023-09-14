@@ -4,5 +4,5 @@
 #
 # Reading the declaration part of the package.
 #
-
+Print("Reading Package `graphviz`");
 ReadPackage( "graphviz", "gap/dot.gd");
