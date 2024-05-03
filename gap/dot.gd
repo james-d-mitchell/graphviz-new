@@ -78,6 +78,7 @@ DeclareOperation("GraphvizAttrs", [IsGVObject]);
 #! @Description Gets the nodes of the provided graphviz graph.
 #! Node names can only be [a-zA-Z0-9_£] TODO check exact docs.
 DeclareOperation("GraphvizNodes", [IsGVGraph]);
+DeclareOperation("GraphvizNode", [IsGVGraph, IsObject]);
 
 #! @Arguments graph
 #! @Returns the subgraphs of the provided graphviz graph.
@@ -98,6 +99,7 @@ DeclareOperation("GraphvizFindGraph", [IsGVGraph, IsObject]);
 #! @Returns the edges of the provided graphviz graph.
 #! @Description Gets the edges of the provided graphviz graph.
 DeclareOperation("GraphvizEdges", [IsGVGraph]);
+DeclareOperation("GraphvizEdges", [IsGVGraph, IsObject, IsObject]);
 
 #! @Subsection For only edges.
 
@@ -182,6 +184,7 @@ DeclareOperation("GraphvizSetAttr", [IsGVObject, IsObject]);
 #!    Updates the label of the object.
 #!    If a label already exists and a new value is provided, the old value will
 #!    be overwritten.
+# TODO remove
 DeclareOperation("GraphvizSetLabel", [IsGVObject, IsObject]);
 
 #! @Arguments obj, color
@@ -190,6 +193,7 @@ DeclareOperation("GraphvizSetLabel", [IsGVObject, IsObject]);
 #!    Updates the color of the object.
 #!    If a color already exists and a new value is provided, the old value will
 #!    be overwritten.
+# TODO remove
 DeclareOperation("GraphvizSetColor", [IsGVObject, IsObject]);
 
 #! @Arguments obj, attr
@@ -208,3 +212,6 @@ DeclareOperation("AsString", [IsGVGraph]);
 #!  Unimplemented operation which depending packages can implement.
 #!  Should output the graphviz package representation of the object.
 DeclareOperation("Graphviz", [IsObject]);
+
+DeclareOperation("GraphvizSetNodeColors", [IsGVGraph, IsList]);
+DeclareGlobalFunction("ErrorFormatted");
