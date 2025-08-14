@@ -44,7 +44,8 @@ function(name)
                         Attrs     := [],
                         Parent    := fail,
                         Idx       := 1,
-                        Counter   := 1));
+                        Counter   := 1,
+                        Comments  := []));
 end);
 
 InstallMethod(GraphvizDigraph, "for no args", [], {} -> GraphvizDigraph(""));
@@ -310,6 +311,13 @@ function(x, value)
   attrs := GraphvizAttrs(x);
   Add(attrs, String(value));
   return x;
+end);
+
+InstallMethod(GraphvizAddComment, "for a graphviz (di)graph and string",
+[IsGraphvizGraphDigraphOrContext, IsString],
+function(gv, comment)
+    Append(gv!.Comments, SplitString(comment, "\n"));
+    return gv;
 end);
 
 #############################################################################
@@ -649,7 +657,7 @@ function(gv, labels)
     if not StartsWith(labels[i], "\"") or not EndsWith(labels[i], "\"") then
       labels[i] := Concatenation("\"", labels[i], "\"");
     fi;
-    # GV_ErrorIfNotValidLabel(labels[i]);
+    GV_ErrorIfNotValidLabel(labels[i]);
     GraphvizSetAttr(nodes[i], "label", labels[i]);
   od;
   return gv;
