@@ -498,7 +498,7 @@ function(graph)
     Append(result, "\t");
     for kv in attrs do
       Append(result,
-             StringFormatted("{} ", kv));
+             StringFormatted("{}\n", kv));
     od;
     Append(result, "\n");
   fi;
@@ -602,6 +602,9 @@ function(graph, is_subgraph)
     Append(result, GV_StringifyDigraphHead(graph));
   elif IsGraphvizGraph(graph) then
     Append(result, "//dot\n");
+    for comment in graph!.Comments do
+      Append(result, StringFormatted("// {}\n", comment));
+    od;
     Append(result, GV_StringifyGraphHead(graph));
   else
     ErrorFormatted("Unknown graph category, ",

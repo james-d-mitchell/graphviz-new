@@ -24,7 +24,8 @@ function(name)
                         Attrs     := [],
                         Parent    := fail,
                         Idx       := 1,
-                        Counter   := 1));
+                        Counter   := 1,
+                        Comments  := []));
 end);
 
 InstallMethod(GraphvizGraph, "for an object", [IsObject],
