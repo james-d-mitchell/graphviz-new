@@ -10,7 +10,7 @@
 #
 gap> START_TEST("graphvizforgap01.tst");
 
-# gap/dot.gd:224-235
+# gap/dot.gd:233-244
 gap> gv := GraphvizGraph("GraphyMcGraphFace");
 <graphviz graph "GraphyMcGraphFace" with 0 nodes and 0 edges>
 gap> GraphvizName(gv);
@@ -22,7 +22,7 @@ gap> gv := GraphvizGraph();
 gap> GraphvizName(gv);
 ""
 
-# gap/dot.gd:263-274
+# gap/dot.gd:272-283
 gap> gv := GraphvizDigraph("GraphyMcGraphFace");
 <graphviz digraph "GraphyMcGraphFace" with 0 nodes and 0 edges>
 gap> GraphvizName(gv);
@@ -34,7 +34,7 @@ gap> gv := GraphvizDigraph();
 gap> GraphvizName(gv);
 ""
 
-# gap/dot.gd:289-300
+# gap/dot.gd:298-309
 gap> dot := GraphvizDigraph("The Round Table");;
 gap> GraphvizName(dot);
 "The Round Table"
@@ -46,55 +46,55 @@ gap> e := GraphvizAddEdge(dot, "A", "B");;
 gap> GraphvizName(e);
 "(A, B)"
 
-# gap/dot.gd:325-326
+# gap/dot.gd:334-335
 
-# gap/dot.gd:332-333
+# gap/dot.gd:341-342
 
-# gap/dot.gd:340-341
+# gap/dot.gd:349-350
 
-# gap/dot.gd:351-352
+# gap/dot.gd:360-361
 
-# gap/dot.gd:363-364
+# gap/dot.gd:372-373
 
-# gap/dot.gd:377-378
+# gap/dot.gd:386-387
 
-# gap/dot.gd:384-385
-
-# gap/dot.gd:397-398
+# gap/dot.gd:393-394
 
 # gap/dot.gd:406-407
 
-# gap/dot.gd:425-426
+# gap/dot.gd:415-416
 
-# gap/dot.gd:438-439
+# gap/dot.gd:434-435
 
-# gap/dot.gd:462-463
+# gap/dot.gd:447-448
 
-# gap/dot.gd:481-482
+# gap/dot.gd:471-472
 
-# gap/dot.gd:489-490
+# gap/dot.gd:490-491
 
-# gap/dot.gd:499-500
+# gap/dot.gd:498-499
 
-# gap/dot.gd:516-517
+# gap/dot.gd:508-509
 
-# gap/dot.gd:531-532
+# gap/dot.gd:525-526
 
-# gap/dot.gd:539-540
+# gap/dot.gd:540-541
 
 # gap/dot.gd:548-549
 
-# gap/dot.gd:559-560
+# gap/dot.gd:557-558
 
-# gap/dot.gd:572-573
+# gap/dot.gd:568-569
 
-# gap/dot.gd:583-584
+# gap/dot.gd:581-582
 
-# gap/dot.gd:593-594
+# gap/dot.gd:592-593
 
-# gap/dot.gd:605-606
+# gap/dot.gd:602-603
 
-# gap/dot.gd:616-617
+# gap/dot.gd:614-615
+
+# gap/dot.gd:625-626
 
 #
 gap> STOP_TEST("graphvizforgap01.tst", 1);
