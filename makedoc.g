@@ -40,6 +40,8 @@ AutoDoc(
 rec(scaffold := rec(entities := XMLEntities),
     autodoc := true,
     extract_examples := true,
+    gapdoc := rec(
+      LaTeXOptions := rec(EarlyExtraPreamble := "\\usepackage{graphicx}")),
 ));
 
 Unbind(PackageEntity);

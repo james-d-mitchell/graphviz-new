@@ -38,3 +38,6 @@ jobs:
           force: ${{ inputs.force }}
       - uses: gap-actions/update-gh-pages@v1
         if: ${{ !inputs.dry-run }}
+        with:
+          # only the top-level doc/*.{css,html,jpg,js,png} are copied otherwise
+          extra-files: doc/img/

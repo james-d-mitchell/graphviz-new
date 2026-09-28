@@ -1,1 +1,2 @@
-doc
+/doc/*
+!/doc/img/

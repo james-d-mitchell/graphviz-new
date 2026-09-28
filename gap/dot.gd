@@ -163,9 +163,18 @@
 #! <Alt Only="HTML">
 #!     <![CDATA[
 #!     <figure>
-#!         <img height="400" src="png/finite_state_machine.png"/>
+#!         <img src="img/fsm.svg" alt="finite state machine"
+#!              style="max-width: 100%"/>
 #!     </figure>
 #!     ]]>
+#! </Alt>
+#! <Alt Only="LaTeX">
+#!     \begin{center}
+#!         \includegraphics[width=\textwidth]{img/fsm.pdf}
+#!     \end{center}
+#! </Alt>
+#! <Alt Only="Text">
+#!     (The picture is only shown in the HTML and PDF versions of this manual.)
 #! </Alt>
 #!
 #! There are lots more examples in the <F>examples</F> directory within the
