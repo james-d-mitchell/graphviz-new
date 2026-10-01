@@ -343,10 +343,16 @@ DeclareOperation("GraphvizFindSubgraphRecursive",
 #! @GroupTitle Getting Graphviz Edges
 #! @Arguments graph
 #! @Returns a list of &GAPGraphviz; edge objects
-#! @Description Gets the edges of the provided graphviz graph.
-#! If a head and tail are provided will only return edges
+#! @Description Returns the edges of the provided graphviz graph.
+#! If a head and tail are provided it will only return edges
 #! between those two nodes.
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();;
+#! gap> GraphvizAddEdge(gv,"a","b");;
+#! gap> GraphvizEdges(gv);
+#! [ <graphviz edge (a, b)> ]
+#! gap> GraphvizEdges(gv,"a","b");
+#! [ <graphviz edge (a, b)> ]
 #! @EndExampleSession
 DeclareOperation("GraphvizEdges", [IsGraphvizGraphDigraphOrContext]);
 #! @Arguments graph, head, tail
@@ -354,51 +360,67 @@ DeclareOperation("GraphvizEdges",
 [IsGraphvizGraphDigraphOrContext, IsObject, IsObject]);
 #! @EndGroup
 
-#! @Subsection For only edges.
-#! This section contains getters only applicable to graphviz edges.
-
 #! @Arguments edge
 #! @Returns a &GAPGraphviz; node object
-#! @Description Gets the head of the provided graphviz graph.
+#! @Description Returns the head of the provided &GAPGraphviz; edge.
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();;
+#! gap> e:=GraphvizAddEdge(gv,"a","b");
+#! <graphviz edge (a, b)>
+#! gap> GraphvizHead(e);
+#! <graphviz node "a">
 #! @EndExampleSession
 DeclareOperation("GraphvizHead", [IsGraphvizEdge]);
 
 #! @Arguments edge
 #! @Returns a &GAPGraphviz; node object
-#! @Description Gets the tail of the provided graphviz graph.
+#! @Description Returns the tail of the provided &GAPGraphviz; edge.
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();;
+#! gap> e:=GraphvizAddEdge(gv,"a","b");
+#! <graphviz edge (a, b)>
+#! gap> GraphvizTail(e);
+#! <graphviz node "b">
 #! @EndExampleSession
 DeclareOperation("GraphvizTail", [IsGraphvizEdge]);
 
 #! @Section Set Operations
 #! This section covers operations for modifying graphviz objects.
 
-#! @Subsection For modifying graphs.
-#! Operations below only pertain to graphs, digraphs and contexts.
-
 #! @Arguments graph, name
 #! @Returns a &GAPGraphviz; graph.
-#! @Description Sets the name of a graphviz graph or digraph.
+#! @Description Sets the name of a graphviz graph or digraph to
+#! <A>name</A> and return the <A>graph</A> with the new name.
+#! 
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();
+#! <graphviz graph with 0 nodes and 0 edges>
+#! gap> GraphvizSetName(gv,"newname");
+#! <graphviz graph "newname" with 0 nodes and 0 edges>
 #! @EndExampleSession
 DeclareOperation("GraphvizSetName",
                  [IsGraphvizGraphDigraphOrContext, IsObject]);
 
 #! @Arguments graph, node
 #! @Returns a &GAPGraphviz; node object
-#! @Description Adds a node to the graph.
+#! @Description The operation adds a node to the graph.
 #! If a node with the same name is already present the operation fails.
 #! What constitute a valid <A>node</A> name is found at
 #! https://graphviz.org/doc/info/lang.html
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();
+#! <graphviz graph with 0 nodes and 0 edges>
+#! gap> GraphvizAddNode(gv,"a");
+#! <graphviz node "a">
+#! gap> gv;
+#! <graphviz graph with 1 node and 0 edges>
 #! @EndExampleSession
 DeclareOperation("GraphvizAddNode",
                  [IsGraphvizGraphDigraphOrContext, IsObject]);
 
 #! @Arguments graph, head, tail
 #! @Returns a &GAPGraphviz; edge object
-#! @Description adds an edge to the graph.
+#! @Description The operation adds an edge to the graph.
 #! The <K>head</K> and <K>tail</K> can be general objects, strings or graphviz
 #! nodes. If the <K>head</K> and <K>tail</K> are general objects, they will be
 #! converted to strings. Strings are then interpreted as node IDs. If no nodes
@@ -409,6 +431,12 @@ DeclareOperation("GraphvizAddNode",
 #! added to the graph. If different nodes with the same name are in the graph
 #! then the operation fails.
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();
+#! <graphviz graph with 0 nodes and 0 edges>
+#! gap> GraphvizAddEdge(gv,"a","b");
+#! <graphviz edge (a, b)>
+#! gap> gv;
+#! <graphviz graph with 2 nodes and 1 edge>
 #! @EndExampleSession
 DeclareOperation("GraphvizAddEdge",
 [IsGraphvizGraphDigraphOrContext, IsObject, IsObject]);
@@ -465,6 +493,12 @@ DeclareOperation("GraphvizAddComment",
 #! All edges containing the node are also removed.
 #! If no such node exists the operation fails.
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();;
+#! gap> GraphvizAddNode(gv,"a");;
+#! gap> gv;
+#! <graphviz graph with 1 node and 0 edges>
+#! gap> GraphvizRemoveNode(gv,"a");
+#! <graphviz graph with 0 nodes and 0 edges>
 #! @EndExampleSession
 DeclareOperation("GraphvizRemoveNode",
 [IsGraphvizGraphDigraphOrContext, IsObject]);
@@ -483,6 +517,12 @@ DeclareOperation("GraphvizFilterEdges",
 #! the specified names.
 #! If no edges exist between the two nodes, the operation fails.
 #! @BeginExampleSession
+#! gap> gv:=GraphvizGraph();;
+#! gap> GraphvizAddEdge(gv,"a","b");;
+#! gap> gv;
+#! <graphviz graph with 2 nodes and 1 edge>
+#! gap> GraphvizRemoveEdges(gv,"a","b");
+#! <graphviz graph with 2 nodes and 0 edges>
 #! @EndExampleSession
 DeclareOperation("GraphvizRemoveEdges",
 [IsGraphvizGraphDigraphOrContext, IsObject, IsObject]);
