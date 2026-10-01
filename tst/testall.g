@@ -6,9 +6,6 @@ LoadPackage("GraphvizForGAP");
 # compute packages not loaded and thus tests not run
 # todo: check if loading other packages without erroring if it fails is possible
 excl := [];
-if not IsPackageLoaded("Digraphs", "1.10.0") then
-  Add(excl, "digraphs.tst");
-fi;
 if Filename(DirectoriesSystemPrograms(), "dot") = fail then
   Add(excl, "splash.tst");
 fi;
