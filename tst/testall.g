@@ -16,7 +16,9 @@ if Filename(DirectoriesSystemPrograms(), "pdflatex") = fail then
   Add(excl, "splash_latex.tst");
 fi;
 
-Print(excl);
+if not IsEmpty(excl) then
+  Print("Excluding test files: ", excl, "\n");
+fi;
 
 TestDirectory(DirectoriesPackageLibrary("GraphvizForGAP", "tst"),
   rec(exitGAP := true, compareFunction := "uptowhitespace", exclude := excl));
