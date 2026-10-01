@@ -12,9 +12,6 @@
 # Family + type
 ###############################################################################
 
-BindGlobal("GV_MapType", NewType(GV_ObjectFamily,
-                                 GV_IsMap and IsComponentObjectRep));
-
 BindGlobal("GV_NodeType", NewType(GV_ObjectFamily,
                                     IsGraphvizNode and
                                     IsComponentObjectRep and
@@ -34,9 +31,6 @@ BindGlobal("GV_ContextType", NewType(GV_ObjectFamily,
 # Constructors etc
 ###############################################################################
 
-InstallMethod(GV_Map, "for no args",
-[], {} -> Objectify(GV_MapType, rec(Data := rec())));
-
 InstallMethod(GV_Node, "for a string",
 [IsGraphvizGraphDigraphOrContext, IsString],
 function(graph, name)
@@ -47,7 +41,7 @@ function(graph, name)
   out := Objectify(GV_NodeType,
                   rec(
                     Name   := name,
-                    Attrs  := GV_Map(),
+                    Attrs  := rec(),
                     Parent := graph,
                     Idx    := GV_GetCounter(graph)));
   GV_IncCounter(graph);
@@ -66,7 +60,7 @@ function(graph, head, tail)
                                             GraphvizName(tail)),
                   Head   := head,
                   Tail   := tail,
-                  Attrs  := GV_Map(),
+                  Attrs  := rec(),
                   Parent := graph,
                   Idx    := GV_GetCounter(graph)));
   GV_IncCounter(graph);
@@ -112,9 +106,9 @@ function(parent, name)
   out := Objectify(GV_ContextType,
                       rec(
                         Name      := name,
-                        Subgraphs := GV_Map(),
-                        Contexts  := GV_Map(),
-                        Nodes     := GV_Map(),
+                        Subgraphs := rec(),
+                        Contexts  := rec(),
+                        Nodes     := rec(),
                         Edges     := [],
                         Attrs     := [],
                         Parent    := parent,
@@ -124,55 +118,6 @@ function(parent, name)
   GV_IncCounter(parent);
   return out;
 end);
-
-############################################################
-# Graphviz Map Functions
-############################################################
-
-InstallMethod(\[\],
-"for a graphviz map and a string",
-[GV_IsMap, IsString],
-function(m, o)
-  if IsBound(m[o]) then
-    return m!.Data.(o);
-  fi;
-  return fail;
-end);
-
-InstallMethod(\[\],
-"for a graphviz map and an object",
-[GV_IsMap, IsObject],
-{m, o} -> m[String(o)]);
-
-InstallMethod(\[\]\:\=,
-"for a graphviz map and two objects",
-[GV_IsMap, IsObject, IsObject],
-function(m, key, val)
-  m!.Data.(key) := val;
-end);
-
-InstallMethod(Unbind\[\],
-"for a graphviz map and an object",
-[GV_IsMap, IsObject],
-function(m, key)
-  Unbind(m!.Data.(key));
-end);
-
-InstallMethod(IsBound\[\],
-"for a graphviz map and an object",
-[GV_IsMap, IsObject],
-{m, key} -> IsBound(m!.Data.(key)));
-
-InstallMethod(GV_MapNames, "for a graphviz map",
-[GV_IsMap], m -> RecNames(m!.Data));
-
-InstallMethod(ViewObj, "for a graphviz map", [GV_IsMap],
-function(m)
-  ViewObj(m!.Data);
-end);
-
-InstallMethod(Size, "for a graphviz map",
-[GV_IsMap], m -> Length(GV_MapNames(m)));
 
 # Graph child counter functions
 
@@ -192,7 +137,7 @@ x -> x!.Counter);
 InstallMethod(GV_HasNode,
 "for a graphviz graph",
 [IsGraphvizGraphDigraphOrContext, IsString],
-{g, name} -> name in GV_MapNames(GraphvizNodes(g)));
+{g, name} -> name in RecNames(GraphvizNodes(g)));
 
 InstallMethod(GV_GetParent,
 "for a graphviz object",
@@ -215,8 +160,8 @@ function(graph, pred)
     fi;
 
     # add subgraphs to list of to visit if not visited
-    for key in GV_MapNames(GraphvizSubgraphs(g)) do
-      subgraph := GraphvizSubgraphs(g)[key];
+    for key in RecNames(GraphvizSubgraphs(g)) do
+      subgraph := GraphvizSubgraphs(g).(key);
       if not ForAny(seen, s -> IsIdenticalObj(s, subgraph)) then
         Add(seen, subgraph);
         Add(to_visit, subgraph);
@@ -224,8 +169,8 @@ function(graph, pred)
     od;
 
     # add contexts to list of to visit if not visited
-    for key in GV_MapNames(GraphvizContexts(g)) do
-      context := GraphvizContexts(g)[key];
+    for key in RecNames(GraphvizContexts(g)) do
+      context := GraphvizContexts(g).(key);
       if not ForAny(seen, s -> IsIdenticalObj(s, context)) then
         Add(seen, context);
         Add(to_visit, context);
@@ -268,12 +213,12 @@ function(graph, pred)
 
       # Add children
       nexts := GraphvizSubgraphs(curr);
-      for key in GV_MapNames(nexts) do
-        Add(queue, nexts[key]);
+      for key in RecNames(nexts) do
+        Add(queue, nexts.(key));
       od;
       nexts := GraphvizContexts(curr);
-      for key in GV_MapNames(nexts) do
-        Add(queue, nexts[key]);
+      for key in RecNames(nexts) do
+        Add(queue, nexts.(key));
       od;
     od;
   od;
@@ -327,7 +272,7 @@ function(x, node)
   local name, nodes;
   name  := GraphvizName(node);
   nodes := GraphvizNodes(x);
-  nodes[name] := node;
+  nodes.(name) := node;
   return x;
 end);
 
@@ -463,15 +408,13 @@ function(graph)
   return result;
 end);
 
-InstallMethod(GV_StringifyNodeEdgeAttrs,
-"for a GV_Map",
-[GV_IsMap],
+InstallMethod(GV_StringifyNodeEdgeAttrs, "for a record", [IsRecord],
 function(attrs)
   local result, keys, key, val, n, i, tmp, format;
 
   result := "";
-  n      := Length(GV_MapNames(attrs));
-  keys   := SSortedList(GV_MapNames(attrs));
+  n      := Length(RecNames(attrs));
+  keys   := SSortedList(RecNames(attrs));
 
   # helper for formatting attribute kv pairs
   format := function(format, key, val)
@@ -495,13 +438,13 @@ function(attrs)
     Append(result, " [");
     for i in [1 .. n - 1] do
         key := keys[i];
-        val := attrs[key];
+        val := attrs.(key);
 
         Append(result, format("{}={}, ", key, val));
     od;
     # handle last element
     key := keys[n];
-    val := attrs[key];
+    val := attrs.(key);
     Append(result, format("{}={}]", key, val));
   fi;
 
@@ -525,9 +468,9 @@ function(graph)
   subs  := GraphvizSubgraphs(graph);
   ctxs  := GraphvizContexts(graph);
 
-  node_hist := List(GV_MapNames(nodes), n -> [GV_GetIdx(nodes[n]), nodes[n]]);
-  subs_hist := List(GV_MapNames(subs), s -> [GV_GetIdx(subs[s]), subs[s]]);
-  ctxs_hist := List(GV_MapNames(ctxs), s -> [GV_GetIdx(ctxs[s]), ctxs[s]]);
+  node_hist := List(RecNames(nodes), n -> [GV_GetIdx(nodes.(n)), nodes.(n)]);
+  subs_hist := List(RecNames(subs), s -> [GV_GetIdx(subs.(s)), subs.(s)]);
+  ctxs_hist := List(RecNames(ctxs), s -> [GV_GetIdx(ctxs.(s)), ctxs.(s)]);
   edge_hist := List(edges, e -> [GV_GetIdx(e), e]);
 
   hist := Concatenation(node_hist, edge_hist, subs_hist, ctxs_hist);
@@ -607,7 +550,7 @@ c -> IsString(c) and (GV_IsValidRGBColor(c) or c in GV_ValidColorNames));
 InstallGlobalFunction(GV_ErrorIfNotNodeColoring,
 function(gv, colors)
   local N;
-  N := Size(GraphvizNodes(gv));
+  N := GraphvizNumberOfNodes(gv);
   if Length(colors) <> N then
     ErrorFormatted(
         "the number of node colors must be the same as the number",

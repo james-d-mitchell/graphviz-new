@@ -17,9 +17,9 @@ function(name)
   return Objectify(GV_GraphType,
                       rec(
                         Name      := name,
-                        Subgraphs := GV_Map(),
-                        Contexts  := GV_Map(),
-                        Nodes     := GV_Map(),
+                        Subgraphs := rec(),
+                        Contexts  := rec(),
+                        Nodes     := rec(),
                         Edges     := [],
                         Attrs     := [],
                         Parent    := fail,
@@ -37,9 +37,9 @@ function(name)
   return Objectify(GV_DigraphType,
                       rec(
                         Name      := name,
-                        Subgraphs := GV_Map(),
-                        Contexts  := GV_Map(),
-                        Nodes     := GV_Map(),
+                        Subgraphs := rec(),
+                        Contexts  := rec(),
+                        Nodes     := rec(),
                         Edges     := [],
                         Attrs     := [],
                         Parent    := fail,
@@ -72,7 +72,7 @@ function(g)
   nodes  := 0;
 
   GV_GraphSearchChildren(g, function(s)
-    nodes := nodes + Length(GV_MapNames(GraphvizNodes(s)));
+    nodes := nodes + Length(RecNames(GraphvizNodes(s)));
     edges := edges + Length(GraphvizEdges(s));
     return false;
   end);
@@ -111,6 +111,9 @@ x -> x!.Attrs);
 InstallMethod(GraphvizNodes, "for a graphviz (di)graph or context",
 [IsGraphvizGraphDigraphOrContext], x -> x!.Nodes);
 
+InstallMethod(GraphvizNumberOfNodes, "for a graphviz (di)graph or context",
+[IsGraphvizGraphDigraphOrContext], x -> Length(RecNames(GraphvizNodes(x))));
+
 InstallMethod(GraphvizEdges, "for a graphviz (di)graph or context",
 [IsGraphvizGraphDigraphOrContext], x -> x!.Edges);
 
@@ -118,22 +121,25 @@ InstallMethod(GraphvizEdges,
 "for a graphviz (di)graph or context, object, and object",
 [IsGraphvizGraphDigraphOrContext, IsObject, IsObject],
 function(gv, head, tail)
-  local nhead, ntail;
+  local nodes;
 
-    nhead := GraphvizNodes(gv)[head];
-    if nhead = fail then
+    nodes := GraphvizNodes(gv);
+    head  := String(head);
+    if not IsBound(nodes.(head)) then
       ErrorFormatted("the 2nd argument \"{}\" (head of an edge) is not a ",
                      "node of the 1st argument (a graphviz graph or digraph)",
                      head);
     fi;
-    ntail := GraphvizNodes(gv)[tail];
-    if ntail = fail then
+    tail := String(tail);
+    if not IsBound(nodes.(tail)) then
       ErrorFormatted("the 3rd argument \"{}\" (tail of an edge) is not a ",
                      "node of the 1st argument (a graphviz graph or digraph)",
                      tail);
     fi;
+    head := nodes.(head);
+    tail := nodes.(tail);
     return Filtered(GraphvizEdges(gv),
-                    x -> GraphvizHead(x) = nhead and GraphvizTail(x) = ntail);
+                    x -> GraphvizHead(x) = head and GraphvizTail(x) = tail);
 end);
 
 InstallMethod(GraphvizSubgraphs, "for a graphviz (di)graph or context",
@@ -155,22 +161,31 @@ InstallMethod(\=, "for graphviz nodes",
 
 # Accessing node attributes
 
+# TODO Remove this, and just use GraphvizAttrs(node) directly?
 InstallMethod(\[\], "for a graphviz node and a string",
 [IsGraphvizNode, IsString],
-{node, key} -> GraphvizAttrs(node)[key]);
+function(node, key)
+  if IsBound(GraphvizAttrs(node).(key)) then
+    return GraphvizAttrs(node).(key);
+  fi;
+  return fail;
+end);
 
+# TODO Remove this, and just use GraphvizAttrs(node) directly?
 InstallMethod(\[\], "for a graphviz node and an object",
 [IsGraphvizNode, IsObject],
 {node, key} -> node[String(key)]);
 
 # Setting node attributes
 
+# TODO Remove this, and just use GraphvizAttrs(node) directly?
 InstallMethod(\[\]\:\=, "for a graphviz node and two strings",
 [IsGraphvizNode, IsString, IsString],
 function(node, key, val)
-  GraphvizAttrs(node)[key] := val;
+  GraphvizAttrs(node).(key) := val;
 end);
 
+# TODO Remove this, and just use SetGraphvizAttr(node, key, val) directly?
 InstallMethod(\[\]\:\=, "for a graphviz node and two strings",
 [IsGraphvizNode, IsObject, IsObject],
 function(node, key, val)
@@ -179,20 +194,29 @@ end);
 
 # Accessing edge attributes
 
+# TODO Remove this, and just use GraphvizAttr(edge) directly?
 InstallMethod(\[\], "for a graphviz edge and a string",
 [IsGraphvizEdge, IsString],
-{edge, key} -> GraphvizAttrs(edge)[key]);
+function(edge, key)
+  if IsBound(GraphvizAttrs(edge).(key)) then
+    return GraphvizAttrs(edge).(key);
+  fi;
+  return fail;
+end);
 
+# TODO Remove this, and just use GraphvizAttr(edge) directly?
 InstallMethod(\[\], "for a graphviz edge and an object",
 [IsGraphvizEdge, IsObject],
 {edge, key} -> edge[String(key)]);
 
+# TODO Remove this, and just use GraphvizAttr(edge) directly?
 InstallMethod(\[\]\:\=, "for a graphviz edge and a string",
 [IsGraphvizEdge, IsString, IsString],
 function(edge, key, val)
-  GraphvizAttrs(edge)[key] := val;
+  GraphvizAttrs(edge).(key) := val;
 end);
 
+# TODO Remove this, and use GraphvizSetAttr(edge) instead?
 InstallMethod(\[\]\:\=, "for a graphviz edge and an object",
 [IsGraphvizEdge, IsObject, IsObject],
 function(edge, key, val)
@@ -204,10 +228,17 @@ InstallMethod(\=, "for graphviz edges",
 
 # Accessor for graphs and digraphs
 
+# TODO Remove this, and use GraphvizAttrs(graph) instead?
 InstallMethod(\[\], "for a graphviz (di)graph or context and string",
 [IsGraphvizGraphDigraphOrContext, IsString],
-{graph, node} -> GraphvizNodes(graph)[node]);
+function(graph, node)
+  if IsBound(GraphvizNodes(graph).(node)) then
+    return GraphvizNodes(graph).(node);
+  fi;
+  return fail;
+end);
 
+# TODO Remove this, and use GraphvizAttrs(graph) instead?
 InstallMethod(\[\], "for a graphviz (di)graph or context and object",
 [IsGraphvizGraphDigraphOrContext, IsObject],
 {g, o} -> g[String(o)]);
@@ -256,7 +287,7 @@ InstallMethod(GraphvizSetAttr,
 "for a graphviz node or edge, object, and object",
 [IsGraphvizNodeOrEdge, IsObject, IsObject],
 function(x, name, value)
-  GraphvizAttrs(x)[String(name)] := String(value);
+  GraphvizAttrs(x).(String(name)) := String(value);
   return x;
 end);
 
@@ -450,7 +481,7 @@ function(gv, name)
   local subgraphs, root, subgraph;
 
   subgraphs := GraphvizSubgraphs(gv);
-  if IsBound(subgraphs[name]) then
+  if IsBound(subgraphs.(name)) then
     ErrorFormatted("the 1st argument (a graphviz (di)graph/context) ",
                    "already has a subgraph with name \"{}\"", name);
   fi;
@@ -467,7 +498,7 @@ function(gv, name)
     subgraph := GV_Graph(root, name);
   fi;
 
-  subgraphs[name] := subgraph;
+  subgraphs.(name) := subgraph;
   return subgraph;
 end);
 
@@ -489,14 +520,14 @@ function(graph, name)
   local contexts, ctx;
 
   contexts := GraphvizContexts(graph);
-  if IsBound(contexts[name]) then
+  if IsBound(contexts.(name)) then
     ErrorFormatted("the 1st argument (a graphviz (di)graph/context) ",
                    "already has a context with name \"{}\"",
                    name);
   fi;
 
   ctx             := GV_Context(graph, name);
-  contexts[name] := ctx;
+  contexts.(name) := ctx;
   return ctx;
 end);
 
@@ -521,8 +552,8 @@ InstallMethod(GraphvizRemoveNode,
 function(g, name)
   local nodes;
   nodes := GraphvizNodes(g);
-  if nodes[name] <> fail then
-    Unbind(nodes[name]);
+  if IsBound(nodes.(name)) then
+    Unbind(nodes.(name));
   else
     ErrorFormatted("the 2nd argument (node name string) \"{}\"",
                    " is not a node of the 1st argument (a graphviz",
@@ -616,13 +647,13 @@ function(obj, attr)
   attrs := GraphvizAttrs(obj);
   attr  := String(attr);
 
-  if not IsBound(attrs[attr]) then
+  if not IsBound(attrs.(attr)) then
     ErrorFormatted("the 2nd argument (attribute name) \"{}\" ",
                    "is not set on the provided object.",
                    attr);
   fi;
 
-  Unbind(attrs[attr]);
+  Unbind(attrs.(attr));
   return obj;
 end);
 
@@ -669,20 +700,19 @@ InstallMethod(GraphvizSetNodeLabels,
 [IsGraphvizGraphDigraphOrContext, IsList],
 function(gv, labels)
   local nodes, i;
-  if Size(GraphvizNodes(gv)) <> Size(labels) then
+  if GraphvizNumberOfNodes(gv) <> Size(labels) then
     ErrorFormatted("the 2nd argument (list of node labels) ",
                    "has incorrect length, expected {}, but ",
-                   "found {}", Size(GraphvizNodes(gv)), Size(labels));
+                   "found {}", GraphvizNumberOfNodes(gv), Size(labels));
   fi;
 
   nodes := GraphvizNodes(gv);
-  for i in [1 .. Size(nodes)] do
+  for i in [1 .. GraphvizNumberOfNodes(gv)] do
     labels[i] := String(labels[i]);
     if not StartsWith(labels[i], "\"") or not EndsWith(labels[i], "\"") then
       labels[i] := Concatenation("\"", labels[i], "\"");
     fi;
-    # GV_ErrorIfNotValidLabel(labels[i]);
-    GraphvizSetAttr(nodes[i], "label", labels[i]);
+    GraphvizSetAttr(nodes.(i), "label", labels[i]);
   od;
   return gv;
 end);
@@ -697,9 +727,9 @@ function(gv, colors)
 
   nodes := GraphvizNodes(gv);
 
-  for i in [1 .. Size(nodes)] do
-    GraphvizSetAttr(nodes[i], "color", colors[i]);
-    GraphvizSetAttr(nodes[i], "style", "filled");
+  for i in [1 .. GraphvizNumberOfNodes(gv)] do
+    GraphvizSetAttr(nodes.(i), "color", colors[i]);
+    GraphvizSetAttr(nodes.(i), "style", "filled");
   od;
   return gv;
 end);
