@@ -313,6 +313,15 @@ DeclareOperation("GraphvizAttrs", [IsGraphvizObject]);
 DeclareOperation("GraphvizNodes", [IsGraphvizGraphDigraphOrContext]);
 
 #! @Arguments graph
+#! @Returns the number of nodes in a &GAPGraphviz; object.
+
+#! @Description This operations returns the number of nodes in the
+#! &GAPGraphviz; graph, digraph, or context <A>graph</A>.
+#! @BeginExampleSession
+#! @EndExampleSession
+DeclareOperation("GraphvizNumberOfNodes", [IsGraphvizGraphDigraphOrContext]);
+
+#! @Arguments graph
 #! @Returns a print record of &GAPGraphviz; graphs
 #! @Description gets the subgraphs of a provided graphviz graph.
 #! @BeginExampleSession
@@ -391,7 +400,7 @@ DeclareOperation("GraphvizTail", [IsGraphvizEdge]);
 #! @Returns a &GAPGraphviz; graph.
 #! @Description Sets the name of a graphviz graph or digraph to
 #! <A>name</A> and return the <A>graph</A> with the new name.
-#! 
+#!
 #! @BeginExampleSession
 #! gap> gv:=GraphvizGraph();
 #! <graphviz graph with 0 nodes and 0 edges>

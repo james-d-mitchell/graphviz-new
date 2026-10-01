@@ -274,33 +274,33 @@ with name "a"
 gap> g := GraphvizDigraph();;
 gap> s1 := GraphvizAddSubgraph(g, "a");;
 gap> s2 := GraphvizAddSubgraph(g, "b");;
-gap> GraphvizSubgraphs(g)["a"];
+gap> GraphvizSubgraphs(g).a;
 <graphviz digraph "a" with 0 nodes and 0 edges>
-gap> GraphvizSubgraphs(g)["b"];
+gap> GraphvizSubgraphs(g).b;
 <graphviz digraph "b" with 0 nodes and 0 edges>
-gap> GraphvizSubgraphs(g)["d"];
-fail
+gap> IsBound(GraphvizSubgraphs(g).d);
+false
 
 # Test getting context by name
 gap> g := GraphvizDigraph();;
 gap> s1 := GraphvizAddSubgraph(g, "a");;
 gap> s2 := GraphvizAddContext(g, "c");;
-gap> GraphvizSubgraphs(g)["a"];
+gap> GraphvizSubgraphs(g).a;
 <graphviz digraph "a" with 0 nodes and 0 edges>
-gap> GraphvizSubgraphs(g)["c"];
-fail
-gap> GraphvizContexts(g)["c"];
+gap> not IsBound(GraphvizSubgraphs(g).c);
+true
+gap> GraphvizContexts(g).c;
 <graphviz context "c" with 0 nodes and 0 edges>
 
 # Test adding a nested subgraph
 gap> g := GraphvizGraph();;
 gap> s1 := GraphvizAddSubgraph(g, "a");;
 gap> s2 := GraphvizAddSubgraph(s1, "c");;
-gap> GraphvizSubgraphs(g)["a"];
+gap> GraphvizSubgraphs(g).a;
 <graphviz graph "a" with 0 nodes and 0 edges>
-gap> GraphvizSubgraphs(g)["c"];
-fail
-gap> GraphvizSubgraphs(s1)["c"];
+gap> IsBound(GraphvizSubgraphs(g).c);
+false
+gap> GraphvizSubgraphs(s1).c;
 <graphviz graph "c" with 0 nodes and 0 edges>
 
 # Test displaying a nested subgraph
@@ -324,9 +324,9 @@ gap> GraphvizAddContext(g, 11);
 gap> g := GraphvizGraph();;
 gap> GraphvizAddContext(g, ["a"]);;
 gap> GraphvizAddSubgraph(g, ["b"]);;
-gap> GraphvizSubgraphs(g)[["b"]];
+gap> GraphvizSubgraphs(g).(String(["b"]));
 <graphviz graph "[ "b" ]" with 0 nodes and 0 edges>
-gap> GraphvizContexts(g)[["a"]];
+gap> GraphvizContexts(g).(String(["a"]));
 <graphviz context "[ "a" ]" with 0 nodes and 0 edges>
 
 # Test finding subgraph (parent)

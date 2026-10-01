@@ -13,12 +13,6 @@
 
 DeclareOperation("GV_GetCounter", [IsGraphvizGraphDigraphOrContext]);
 DeclareOperation("GV_IncCounter", [IsGraphvizGraphDigraphOrContext]);
-DeclareCategory("GV_IsMap", IsObject);
-DeclareAttribute("Size", GV_IsMap);
-DeclareOperation("\[\]", [GV_IsMap, IsObject]);
-DeclareOperation("\[\]:=", [GV_IsMap, IsObject, IsObject]);
-DeclareOperation("Unbind\[\]", [GV_IsMap, IsObject]);
-DeclareOperation("IsBound\[\]", [GV_IsMap, IsObject]);
 
 DeclareOperation("GV_StringifyGraphHead", [IsGraphvizGraphDigraphOrContext]);
 DeclareOperation("GV_StringifyDigraphHead", [IsGraphvizGraphDigraphOrContext]);
@@ -26,7 +20,7 @@ DeclareOperation("GV_StringifySubgraphHead", [IsGraphvizGraphDigraphOrContext]);
 DeclareOperation("GV_StringifyContextHead", [IsGraphvizGraphDigraphOrContext]);
 DeclareOperation("GV_StringifyNode", [IsGraphvizNode]);
 DeclareOperation("GV_StringifyGraphAttrs", [IsGraphvizGraphDigraphOrContext]);
-DeclareOperation("GV_StringifyNodeEdgeAttrs", [GV_IsMap]);
+DeclareOperation("GV_StringifyNodeEdgeAttrs", [IsRecord]);
 DeclareOperation("GV_StringifyGraph",
                  [IsGraphvizGraphDigraphOrContext, IsBool]);
 
@@ -38,8 +32,6 @@ DeclareOperation("GV_Edge",
 DeclareOperation("GV_Graph", [IsGraphvizGraphDigraphOrContext, IsString]);
 DeclareOperation("GV_Digraph", [IsGraphvizDigraph, IsString]);
 DeclareOperation("GV_Context", [IsGraphvizGraphDigraphOrContext, IsString]);
-DeclareOperation("GV_Map", []);
-DeclareOperation("GV_MapNames", [GV_IsMap]);
 
 DeclareOperation("GV_HasNode", [IsGraphvizGraphDigraphOrContext, IsObject]);
 
