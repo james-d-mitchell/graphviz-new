@@ -33,8 +33,6 @@ DeclareOperation("GV_Graph", [IsString, IsBool]);
 DeclareOperation("GV_Subgraph", [IsGraphvizGraph, IsString]);
 DeclareOperation("GV_Context", [IsGraphvizGraph, IsString]);
 
-DeclareOperation("GV_HasNode", [IsGraphvizGraph, IsObject]);
-
 DeclareOperation("GV_GetParent", [IsGraphvizObject]);
 DeclareOperation("GV_GraphTreeSearch",
 [IsGraphvizGraph, IsFunction]);
