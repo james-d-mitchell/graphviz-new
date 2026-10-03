@@ -191,6 +191,8 @@ DeclareCategory("IsGraphvizEdge", IsGraphvizNodeOrEdge);
 #! attributes.
 #! @EndGroup
 
+DeclareCategory("IsGraphvizDigraph", IsGraphvizGraph);
+DeclareCategory("IsGraphvizContext", IsGraphvizGraph);
 #! @Section Constructors
 
 #! @BeginGroup
