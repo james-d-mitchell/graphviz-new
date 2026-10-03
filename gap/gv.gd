@@ -12,15 +12,7 @@
 ## graphviz package.
 
 DeclareOperation("GV_GetCounter", [IsGraphvizGraph]);
-DeclareOperation("GV_IncCounter", [IsGraphvizGraph]);
 
-DeclareOperation("GV_StringifyGraphHead", [IsGraphvizGraph]);
-DeclareOperation("GV_StringifyDigraphHead", [IsGraphvizGraph]);
-DeclareOperation("GV_StringifySubgraphHead", [IsGraphvizGraph]);
-DeclareOperation("GV_StringifyContextHead", [IsGraphvizGraph]);
-DeclareOperation("GV_StringifyNode", [IsGraphvizNode]);
-DeclareOperation("GV_StringifyGraphAttrs", [IsGraphvizGraph]);
-DeclareOperation("GV_StringifyNodeEdgeAttrs", [IsRecord]);
 DeclareOperation("GV_StringifyGraph",
                  [IsGraphvizGraph, IsBool]);
 
@@ -38,16 +30,12 @@ DeclareOperation("GV_GraphTreeSearch",
 [IsGraphvizGraph, IsFunction]);
 DeclareOperation("GV_GraphSearchChildren",
 [IsGraphvizGraph, IsFunction]);
-DeclareOperation("GV_FindGraphWithNode",
-[IsGraphvizGraph, IsString]);
 DeclareOperation("GV_GetRoot", [IsGraphvizObject]);
 DeclareOperation("GV_EnclosingNonContext", [IsGraphvizObject]);
 DeclareOperation("GV_AddNode",
 [IsGraphvizGraph, IsGraphvizNode]);
 DeclareOperation("GV_AddEdge",
 [IsGraphvizGraph, IsGraphvizEdge]);
-DeclareOperation("GV_GetIdx", [IsGraphvizObject]);
-DeclareOperation("GV_ConstructHistory", [IsGraphvizGraph]);
 
 DeclareOperation("GV_RemoveGraphAttrIfExists",
 [IsGraphvizGraph, IsString]);

@@ -154,6 +154,17 @@ BindGlobal("GV_ValidColorNames",
 # Constructors etc
 ###############################################################################
 
+# Graph child counter functions
+
+BindGlobal("GV_IncCounter",
+function(x)
+  x!.Counter := x!.Counter + 1;
+end);
+
+InstallMethod(GV_GetCounter, "for a graphviz graph",
+[IsGraphvizGraph],
+x -> x!.Counter);
+
 InstallMethod(GV_Node, "for a string",
 [IsGraphvizGraph, IsString],
 function(graph, name)
@@ -239,19 +250,6 @@ function(parent, name)
   SetFilterObj(out, IsGraphvizContext);
   return out;
 end);
-
-# Graph child counter functions
-
-InstallMethod(GV_IncCounter,
-"for a graphviz graph",
-[IsGraphvizGraph],
-function(x)
-  x!.Counter := x!.Counter + 1;
-end);
-
-InstallMethod(GV_GetCounter, "for a graphviz graph",
-[IsGraphvizGraph],
-x -> x!.Counter);
 
 # Nodes
 
@@ -342,9 +340,7 @@ function(graph, pred)
   return fail;
 end);
 
-InstallMethod(GV_FindGraphWithNode,
-"for a graphviz graph and a node",
-[IsGraphvizGraph, IsString],
+BindGlobal("GV_FindGraphWithNode",
 {g, n} -> GV_GraphTreeSearch(g, v -> v[n] <> fail));
 
 InstallMethod(GV_GetRoot,
@@ -438,93 +434,22 @@ end);
 ###############################################################################
 
 # @ Return DOT graph head line.
-InstallMethod(GV_StringifyGraphHead, "for a string",
-[IsGraphvizGraph],
+BindGlobal("GV_StringifyGraphHead",
 graph -> StringFormatted("graph {} {{\n", GraphvizName(graph)));
 
 # @ Return DOT digraph head line.
-InstallMethod(GV_StringifyDigraphHead, "for a string", [IsGraphvizGraph],
+BindGlobal("GV_StringifyDigraphHead",
 graph -> StringFormatted("digraph {} {{\n", GraphvizName(graph)));
 
 # @ Return DOT subgraph head line.
-InstallMethod(GV_StringifySubgraphHead, "for a string",
-[IsGraphvizGraph],
+BindGlobal("GV_StringifySubgraphHead",
 graph -> StringFormatted("subgraph {} {{\n", GraphvizName(graph)));
 
 # @ Return DOT subgraph head line.
-InstallMethod(GV_StringifyContextHead, "for a string", [IsGraphvizGraph],
+BindGlobal("GV_StringifyContextHead",
 graph -> StringFormatted("// {} context \n{{\n", GraphvizName(graph)));
 
-BindGlobal("GV_StringifyNodeName",
-function(node)
-  local name, old;
-
-  Assert(0, IsGraphvizNode(node));
-  name  := GraphvizName(node);
-  if (ForAny("- .+", x -> x in name)
-      or (IsDigitChar(First(name)) and IsAlphaChar(Last(name))))
-      and not StartsWith(name, "\"") then
-    old  := name;
-    name := StringFormatted("\"{}\"", name);
-    Info(InfoWarning,
-         1,
-         "invalid node name ",
-         old,
-         " using ",
-         name,
-         " instead");
-  fi;
-  return name;
-end);
-
-# @ Return DOT node statement line.
-InstallMethod(GV_StringifyNode, "for string and record",
-[IsGraphvizNode],
-function(node)
-  local name, attrs;
-  name  := GV_StringifyNodeName(node);
-  attrs := GraphvizAttrs(node);
-  return StringFormatted("\t{}{}\n", name, GV_StringifyNodeEdgeAttrs(attrs));
-end);
-
-# @ Return DOT graph edge statement line.
-BindGlobal("GV_StringifyEdge",
-function(edge, edge_str)
-  local head, tail, attrs;
-  Assert(0, IsGraphvizEdge(edge));
-  Assert(0, IsString(edge_str));
-  head  := GV_StringifyNodeName(GraphvizHead(edge));
-  tail  := GV_StringifyNodeName(GraphvizTail(edge));
-  attrs := GraphvizAttrs(edge);
-
-  # handle : syntax
-  return StringFormatted("\t{} {} {}{}\n",
-                         head,
-                         edge_str,
-                         tail,
-                         GV_StringifyNodeEdgeAttrs(attrs));
-end);
-
-InstallMethod(GV_StringifyGraphAttrs,
-"for a graphviz graph",
-[IsGraphvizGraph],
-function(graph)
-  local result, attrs, kv;
-  attrs  := GraphvizAttrs(graph);
-  result := "";
-
-  if Length(attrs) <> 0 then
-    Append(result, "\t");
-    for kv in attrs do
-      Append(result,
-             StringFormatted("{} ", kv));
-    od;
-    Append(result, "\n");
-  fi;
-  return result;
-end);
-
-InstallMethod(GV_StringifyNodeEdgeAttrs, "for a record", [IsRecord],
+BindGlobal("GV_StringifyNodeEdgeAttrs",
 function(attrs)
   local result, keys, key, val, n, i, tmp, format;
 
@@ -567,14 +492,75 @@ function(attrs)
   return result;
 end);
 
-InstallMethod(GV_GetIdx,
-"for a graphviz object",
-[IsGraphvizObject],
-x -> x!.Idx);
+BindGlobal("GV_StringifyNodeName",
+function(node)
+  local name, old;
 
-InstallMethod(GV_ConstructHistory,
-"for a graphviz graph",
-[IsGraphvizGraph],
+  Assert(0, IsGraphvizNode(node));
+  name  := GraphvizName(node);
+  if (ForAny("- .+", x -> x in name)
+      or (IsDigitChar(First(name)) and IsAlphaChar(Last(name))))
+      and not StartsWith(name, "\"") then
+    old  := name;
+    name := StringFormatted("\"{}\"", name);
+    Info(InfoWarning,
+         1,
+         "invalid node name ",
+         old,
+         " using ",
+         name,
+         " instead");
+  fi;
+  return name;
+end);
+
+# @ Return DOT node statement line.
+BindGlobal("GV_StringifyNode",
+function(node)
+  local name, attrs;
+  name  := GV_StringifyNodeName(node);
+  attrs := GraphvizAttrs(node);
+  return StringFormatted("\t{}{}\n", name, GV_StringifyNodeEdgeAttrs(attrs));
+end);
+
+# @ Return DOT graph edge statement line.
+BindGlobal("GV_StringifyEdge",
+function(edge, edge_str)
+  local head, tail, attrs;
+  Assert(0, IsGraphvizEdge(edge));
+  Assert(0, IsString(edge_str));
+  head  := GV_StringifyNodeName(GraphvizHead(edge));
+  tail  := GV_StringifyNodeName(GraphvizTail(edge));
+  attrs := GraphvizAttrs(edge);
+
+  # handle : syntax
+  return StringFormatted("\t{} {} {}{}\n",
+                         head,
+                         edge_str,
+                         tail,
+                         GV_StringifyNodeEdgeAttrs(attrs));
+end);
+
+BindGlobal("GV_StringifyGraphAttrs",
+function(graph)
+  local result, attrs, kv;
+  attrs  := GraphvizAttrs(graph);
+  result := "";
+
+  if Length(attrs) <> 0 then
+    Append(result, "\t");
+    for kv in attrs do
+      Append(result,
+             StringFormatted("{} ", kv));
+    od;
+    Append(result, "\n");
+  fi;
+  return result;
+end);
+
+BindGlobal("GV_GetIdx", x -> x!.Idx);
+
+BindGlobal("GV_ConstructHistory",
 function(graph)
   local ctxs, nodes, edges, subs,
         ctxs_hist, node_hist, edge_hist, subs_hist, hist;
