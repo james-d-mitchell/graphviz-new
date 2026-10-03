@@ -12,6 +12,14 @@
 # Family + type
 ###############################################################################
 
+BindGlobal("GV_ObjectFamily",
+           NewFamily("GV_ObjectFamily", IsGraphvizObject));
+
+BindGlobal("GV_GraphType", NewType(GV_ObjectFamily,
+                                    IsGraphvizGraph and
+                                    IsComponentObjectRep and
+                                    IsAttributeStoringRep));
+
 BindGlobal("GV_NodeType", NewType(GV_ObjectFamily,
                                     IsGraphvizNode and
                                     IsComponentObjectRep and
