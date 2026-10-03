@@ -54,17 +54,6 @@ DeclareOperation("GV_RemoveGraphAttrIfExists",
 
 DeclareGlobalFunction("GV_IsValidColor");
 DeclareGlobalFunction("GV_ErrorIfNotNodeColoring");
-DeclareGlobalFunction("GV_ErrorIfNotValidLabel");
-
-# TODO move to dot? and make public?
-BindGlobal("GV_ObjectFamily",
-           NewFamily("GV_ObjectFamily", IsGraphvizObject));
-
-# TODO move to dot? and make public?
-BindGlobal("GV_GraphType", NewType(GV_ObjectFamily,
-                                    IsGraphvizGraph and
-                                    IsComponentObjectRep and
-                                    IsAttributeStoringRep));
 
 BindGlobal("GV_ValidColorNames",
   ["aliceblue", "antiquewhite", "antiquewhite1", "antiquewhite2",
